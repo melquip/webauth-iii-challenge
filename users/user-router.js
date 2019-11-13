@@ -11,14 +11,14 @@ router.get('/', (req, res) => {
 });
 
 router.post('/register', validateUserBody, (req, res, next) => {
-  const { username, password } = req.body;
+  const { username, password, department } = req.body;
   const hashedPassword = bcrypt.hashSync(password, 11);
-  Users.add({ username, password: hashedPassword, department: 'sales' }).then(user => {
-    res.status(201).json({ id: user.id, username: user.username, department: 'sales' });
+  Users.add({ username, password: hashedPassword, department }).then(user => {
+    res.status(201).json({ id: user.id, username: user.username, department });
   }).catch(next);
 });
 
-router.post('/login', validateUserBody, (req, res, next) => {
+router.post('/login', validateUserLogin, (req, res, next) => {
   const { username, password } = req.body;
   Users.getUser({ username }).then(user => {
     if (!user) {
@@ -78,9 +78,18 @@ function validateUserId(req, res, next) {
 }
 
 function validateUserBody(req, res, next) {
+  const { username, password, department } = req.body;
+  if (!username || !password || !department) {
+    next({ message: 'Missing one of the required `username`, `password` or `department` fields!', status: 401 });
+  } else {
+    req.body = { username, password, department };
+    next();
+  }
+}
+function validateUserLogin(req, res, next) {
   const { username, password } = req.body;
   if (!username || !password) {
-    next({ message: 'Missing required `username` and `password` fields', status: 401 });
+    next({ message: 'Missing one of the required `username` or `password` fields!', status: 401 });
   } else {
     req.body = { username, password };
     next();
