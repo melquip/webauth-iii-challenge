@@ -4,6 +4,7 @@ exports.up = function (knex) {
       user.increments();
       user.string('username', 100).notNullable();
       user.text('password', 255).notNullable();
+      user.string('department', 50).notNullable();
     })
 };
 

@@ -6,10 +6,12 @@ exports.seed = function (knex) {
         {
           "username": "admin",
           "password": bcrypt.hashSync('admin', 11),
+          "department": "finances"
         },
         {
           "username": "melqui",
           "password": bcrypt.hashSync('melqui', 11),
+          "department": "sales"
         },
       ]);
     });
