@@ -1,11 +1,15 @@
 const db = require('../data/db-config');
 
-const getUsers = () => {
-  return db('user');
+const getUsers = (filter) => {
+  if (!filter) {
+    return db('user');
+  } else {
+    return db('user').where(filter);
+  }
 }
 
-const getUser = (dataObj) => {
-  return db('user').where(dataObj).first();
+const getUser = (filter) => {
+  return db('user').where(filter).first();
 }
 
 const add = (user) => {

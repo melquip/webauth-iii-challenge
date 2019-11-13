@@ -13,8 +13,8 @@ router.get('/', (req, res) => {
 router.post('/register', validateUserBody, (req, res, next) => {
   const { username, password } = req.body;
   const hashedPassword = bcrypt.hashSync(password, 11);
-  Users.add({ username, password: hashedPassword }).then(user => {
-    res.status(201).json({ id: user.id, username: user.username });
+  Users.add({ username, password: hashedPassword, department: 'sales' }).then(user => {
+    res.status(201).json({ id: user.id, username: user.username, department: 'sales' });
   }).catch(next);
 });
 
@@ -36,7 +36,7 @@ router.post('/login', validateUserBody, (req, res, next) => {
 });
 
 router.get('/users', restricted, (req, res, next) => {
-  Users.getUsers().then(users => {
+  Users.getUsers({ department: req.loggedInUser.department }).then(users => {
     if (users) {
       res.status(200).json(users.map(user => ({ id: user.id, username: user.username })));
     } else {
@@ -119,7 +119,8 @@ function generateToken(user) {
   return jwt.sign(
     {
       subject: user.id,
-      username: user.username
+      username: user.username,
+      department: user.department
     },
     'secret',
     {
@@ -127,4 +128,5 @@ function generateToken(user) {
     }
   );
 }
+
 module.exports = router;
